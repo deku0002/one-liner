@@ -1,0 +1,73 @@
+Ranked list — best 200-OK targets to investigate (bug-bounty style)
+
+https://careers.zooplus.com/
+ and its JS bundles (e.g. app-*.js, framework-*.js, webpack-runtime-*.js) — check the JS for exposed endpoints, embedded API URLs, hardcoded tokens, or service-worker references (sw.js / partytown). Very high yield for discovering client-side API URLs and third-party DSNs. 
+
+crawl-results
+
+Keycloak / OIDC auth endpoints (login.zooplus.de / auth/realms/.../protocol/openid-connect/… ) — multiple /auth URLs returned 200. Look for client IDs, redirect_uris, .well-known config, userinfo and token endpoints and any misconfigured redirect or CORS issues. These are prime for SSO / auth misconfig checks. 
+
+crawl-results
+
+Support admin UI pages (https://support.zooplus.de/a/admin/
+, dashboard, /a/admin/automations/ticket_updates, /a/solutions/categories/ etc.) — admin UI pages returned 200 and often co-exist with internal REST endpoints (/api/_/...) that can leak data or have auth weaknesses. Investigate exposed admin UI assets and any client-side calls. 
+
+crawl-results
+
+Site app static chunks (https://www.zooplus.de/_next/static/... and other _next JS) — these shipped JS chunks commonly include API base URLs, feature flags, or environment variables. Good to scan for leaked hostnames, console DSNs, or unsecured endpoints. 
+
+crawl-results
+
+Checkout & cart pages — https://www.zooplus.de/checkout/cart — checkout flows often call payment and order APIs; check for CSRF protections, predictable endpoints, or data exposure in responses/redirects. 
+
+crawl-results
+
+Public support/knowledge pages that returned 200 (e.g. https://support.zooplus.de/a/solutions, https://support.zooplus.de/a/i, https://support.zooplus.de/a/b) — these may call internal APIs that return different status codes for authenticated vs unauthenticated requests; useful to fingerprint and map available API paths. 
+
+crawl-results
+
+Sentry / monitoring DSNs and ingest endpoints discovered in JS (strings like the @sentry.io/@o*.ingest.sentry.io/... entries inside bundled JS) — these often expose public DSNs or project IDs in JS; while DSNs are public by design, they can leak project structure, and sometimes are misused to exfiltrate data (worth noting). 
+
+crawl-results
+
+/sw.js, partytown-sw.js, sandbox-sw.html discovered in careers/app JS — service-worker files (200 assets) can expose caching behaviors, and badly configured service workers can be abused to intercept requests or leak data. Check their contents. 
+
+crawl-results
+
+Public subdomains & shop header assets (cdn.public.zooplus.net, media/shop-header/*) — these static hosts served 200 and often include separate bundles (myzooplus, cart service) that reference APIs or SSO config. Useful to enumerate separate microfrontends. 
+
+crawl-results
+
+Info/security and public pages (https://www.zooplus.de/info/about/security, product/category pages) — lower yield but easy to crawl for hidden links (sitemap, robots), breadcrumbs that reveal API patterns (e.g., /services/.../api/...). Good for mapping. 
+
+crawl-results
+
+Quick attack surface checklist (what to look for on each 200 page)
+
+Search bundled JS for: api, token, auth, client_id, secret (rare), sentry, ingest, DSN, keycloak.json, /.well-known/openid-configuration.
+
+Check OIDC endpoints for open redirect / misconfigured redirect_uri or weak client settings. 
+
+crawl-results
+
+Inspect service-worker and sw.js for scope/config that may expose cached APIs. 
+
+crawl-results
+
+From static chunks, extract any full URLs (not relative) — they’re usually API base URLs to enumerate. 
+
+crawl-results
+
+Notes about responsibly testing / scope
+
+I only listed resources the crawler showed as 200 OK. There are many /api/_/… endpoints in the crawl which returned 401/403 — those are important, but you asked to limit to 200 OK ones. 
+
+crawl-results
+
+Always follow the target’s bug-bounty program scope & rules and avoid any destructive testing. If you find credentials, sensitive data, or high-impact issues, report per their program (don’t publicly disclose).
+
+If you want, I can now:
+
+Extract a concise list of the exact JS assets and service worker paths (with line snippets) for the top targets so you can grep them locally, or
+
+Produce a small grep/jq workflow (commands) to scan the downloaded bundles for client_id, token, sentry, ingest, keycloak, /.well-known strings.
