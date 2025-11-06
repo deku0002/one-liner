@@ -1,3 +1,40 @@
+subfinder -d verily.com -silent > subdomains.txt
+
+
+cat subdomains.txt | httpx -silent > live-urls.txt
+
+gospider -S live-urls.txt -c 5 -d 2 --other-source > crawl-results.txt
+
+# This will show you all the JS, JSON, and DB files found
+cat crawl-results.txt | grep -E "\.js|\.json|\.db"
+
+## Step 5: Analyze Your Discovered Files
+Now that you have a list of .js and .json files, you need to download them and search inside them for vulnerabilities.
+
+Download the Files: (You already have the list from grep or ffuf, just wget them).
+
+Analyze with grep: This is the final and most important step.
+
+To find API Keys, Secrets, or Tokens:
+
+Bash
+
+grep -E -i "apiKey|secret|token|bearer|password|auth|key" *.js *.json
+To find API Endpoints:
+
+Bash
+
+grep -E -i "/api/|/v1/|/v2/|/internal/|/graphql/" *.js *.json
+To find Open Redirects (like you were doing):
+
+Bash
+
+grep -E -i "location\.href|location\.assign|location\.replace" *.js
+This workflow (Subdomains -> Live Hosts -> Crawl/Fuzz -> Analyze) is a professional and effective method for finding vulnerabilities.
+
+
+
+
 1st 
 
  subfinder -d domain.com -silent  | \
