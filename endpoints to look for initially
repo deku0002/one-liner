@@ -1,0 +1,53 @@
+🥇 Priority 1: Critical Credentials & Server Access
+These links should be checked first. If any of these are accessible, they represent a critical vulnerability (like exposed passwords or server keys) and should be reported immediately.
+
+https://example.com/.env
+
+https://example.com/.aws/credentials
+
+https://example.com/id_rsa
+
+https://example.com/backup/
+
+https://example.com/log.txt
+
+https://example.com/error.log
+
+🥈 Priority 2: API & Source Code Exposure
+This group includes endpoints that provide a "map" of the application's APIs or expose the application's source code, which often leads to finding other high-severity bugs.
+
+https://example.com/.git/config
+
+https://example.com/swagger-ui.html
+
+https://example.com/swagger.json
+
+https://example.com/graphql
+
+https://example.com/api/config
+
+🥉 Priority 3: High-Potential Attack Endpoints
+These are functional endpoints that are common targets for high-impact vulnerabilities like Remote Code Execution (RCE), brute-force attacks, or insecure file uploads.
+
+https://example.com/api/upload
+
+https://example.com/xmlrpc.php
+
+https://example.com/wp-admin/admin-ajax.php
+
+https://example.com/admin/
+
+https://example.com/dashboard/
+
+🏅 Priority 4: Information Disclosure & Common Vulnerabilities
+This group represents lower-severity (but still valid) findings. They are great for finding your first bug, as they are often overlooked.
+
+httpsJ://example.com/wp-json/wp/v2/users/ (Checks for user enumeration)
+
+https://example.com/?redirect= (Checks for Open Redirect)
+
+https://example.com/?next= (Checks for Open Redirect)
+
+https://example.com/?url= (Checks for Open Redirect)
+
+https://example.com/readme.html (Checks for version disclosure)
