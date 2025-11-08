@@ -1,2 +1,102 @@
-##1 
-     site:TARGET {"internal use only"} {ext:pdf OR ext:xml OR ext:doc OR ext:ppt OR ext:txt OR ext:csv}
+# Google Dorks Catalog — Organized for GitHub
+
+**Purpose:** A clean, GitHub-ready Markdown file with categorized Google dorks for reconnaissance and responsible security testing. Use this only on targets you are authorized to test. Always follow your organization's rules of engagement or a lawful bug bounty program.
+
+---
+
+## Quick reference
+
+```
+##1
+
+site:TARGET {"internal use only"} {ext:pdf OR ext:xml OR ext:doc OR ext:ppt OR ext:txt OR ext:csv}
+```
+
+> Replace `TARGET` with the domain (example: `example.com`) or remove `site:` to search the whole web.
+
+---
+
+## Contents
+
+1. [Overview & Usage](#overview--usage)
+2. [General Dork Examples (##1)](#general-dork-examples-1)
+3. [Sensitive File Types & Configs (##2)](#sensitive-file-types--configs-2)
+4. [Internal / Dev / API-related Dorks (##3)](#internal--dev--api-related-dorks-3)
+5. [Server Errors & Misconfigurations (##4)](#server-errors--misconfigurations-4)
+6. [How to use these responsibly](#how-to-use-these-responsibly)
+7. [Contributing / License / Notes](#contributing--license--notes)
+
+---
+
+## Overview & Usage
+
+This document groups useful Google dorks into categories and explains their purpose and the kinds of security issues they commonly reveal. Each row in the tables below contains:
+
+* **Dork Category** — short name / intent
+* **Search Operator** — the dork to paste into the search engine (adapt `site:target.com` as needed)
+* **Purpose** — what the dork is likely to find
+* **Potential Bug / Risk** — quick risk summary
+
+**Tip:** Wrap multi-word search strings in double quotes `"like this"` to avoid noise. Use `site:target.com` to narrow to a domain.
+
+---
+
+## General Dork Examples (##1)
+
+| Example dork                                                                                         |                                                                                 Description | Notes                                                                   |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------- |
+| `site:TARGET {"internal use only"} {ext:pdf OR ext:xml OR ext:doc OR ext:ppt OR ext:txt OR ext:csv}` | Finds documents with the phrase `internal use only` in common document formats on `TARGET`. | Good for locating internal docs, SOPs, contact lists. Replace `TARGET`. |
+
+---
+
+## Sensitive File Types & Configs (##2)
+
+| Dork Category        | Search Operator                                         | Purpose                                                    | Potential Bug                                                           |
+| -------------------- | ------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Configuration Files  | `filetype:env OR filetype:yaml "password="`             | Finds exposed environment or configuration files.          | Sensitive Data Exposure (secrets, DB creds)                             |
+| Log Files            | `ext:log inurl:access_log`                              | Finds publicly accessible web server log files.            | IPs, request paths, user agents, possible session tokens leaked in logs |
+| Spreadsheets / Lists | `filetype:xls OR filetype:csv "username" OR "password"` | Finds spreadsheets that may store user credentials or PII. | Sensitive Data Exposure, PII leakage                                    |
+| Database Dumps       | `ext:sql intext:"password" OR intext:"dump"`            | Finds SQL dumps and backups containing user data.          | Major Data Breach, account compromise                                   |
+| WordPress Backups    | `intitle:"Index of" wp-config.php.bak`                  | Finds backup copies of `wp-config.php`.                    | Remote Code Execution (RCE) / Credentials exposure                      |
+
+---
+
+## Internal / Dev / API-related Dorks (##3)
+
+| Dork Category     | Search Operator                          | Purpose                                                             | Potential Bug                                        |
+| ----------------- | ---------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| Admin Pages       | `inurl:admin login OR setup`             | Finds administration or login portals that may be unprotected.      | Weak Authentication / Default credentials            |
+| Testing / Staging | `intitle:"staging" site:target.com`      | Finds staging or test environments often left publicly accessible.  | Exposed development environment; sensitive test data |
+| API Keys          | `intext:"API_KEY" ext:js`                | Finds client-side JS files exposing hardcoded API keys.             | API Key Exposure — abuse of resources, data theft    |
+| Internal Tools    | `intitle:"internal" "private" OR "beta"` | Finds pages labeled internal/private that may lack access controls. | Broken Access Control, sensitive operations exposed  |
+
+---
+
+## Server Errors & Misconfigurations (##4)
+
+| Dork Category      | Search Operator                                 | Purpose                                                                    | Potential Bug                                      |
+| ------------------ | ----------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------- |
+| Directory Listings | `intitle:"index of" /etc/`                      | Discovers misconfigured servers that list directory contents.              | Path disclosure, configuration files exposed       |
+| PHP Errors         | `intext:"PHP Parse error" OR "PHP Fatal error"` | Finds pages that display detailed PHP error messages.                      | Information disclosure — file paths, code snippets |
+| SQL Errors         | `intext:"SQL syntax" OR "mysql_fetch_array"`    | Finds pages exposing DB errors which could indicate injectable parameters. | SQL Injection (high probability)                   |
+
+---
+
+## How to use these responsibly
+
+1. **Authorization first** — Only run these dorks against domains you own, have written permission to test, or are part of an authorized bug bounty program. Unauthorized scanning can be illegal.
+2. **Limit noise** — Use `site:` to narrow scope and avoid scanning unrelated domains.
+3. **Triage findings** — Not every result is a vulnerability. Verify the context before reporting.
+4. **Report carefully** — When reporting, include exact search query, evidence, and reproduction steps. Avoid exposing secrets in public issue trackers.
+
+---
+
+## Contributing / License / Notes
+
+* Feel free to open a PR to add or refine dorks. Keep entries concise and cite examples if available.
+* Add a `CODE_OF_CONDUCT.md` and `CONTRIBUTING.md` in the repo if you plan to accept community contributions.
+* **Disclaimer:** These dorks are for defensive/research use only. The author is not responsible for misuse.
+
+---
+
+*Generated and formatted for GitHub by your assistant.*
