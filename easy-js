@@ -17,3 +17,10 @@ pip3 install -r requirements.txt
 cd ..
 
 python3 SecretFinder/SecretFinder.py -p ./js_files -o notion_secrets_raw.json
+
+mkdir -p findings
+for f in js_files/*; do 
+    echo "[+]> Scanning $f" >> findings/secretfinder_results.txt
+    python3 SecretFinder/SecretFinder.py -i "$f" -o cli 2>/dev/null >> findings/secretfinder_results.txt
+done
+
