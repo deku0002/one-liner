@@ -1,0 +1,19 @@
+subfinder -d notion.so -all -silent -o notion_subdomains.txt
+
+echo -e "notion.so\nnotion.com\nnotion.site\nnotionusercontent.com" > notion_targets.txt
+
+cat all_notion_subs.txt | httpx -silent -mc 200,301,302,403 -threads 100 -o live_notion_urls.txt
+
+katana -l live_notion_urls.txt -silent -o all_notion_urls.txt
+
+cat all_notion_urls.txt | grep -E "\.js$" | sort -u > all_notion_js_files.txt
+
+mkdir js_files
+cat all_notion_js_files.txt | while read url; do wget -q -P js_files "$url"; done
+
+git clone https://github.com/m4ll0k/SecretFinder.git
+cd SecretFinder
+pip3 install -r requirements.txt
+cd ..
+
+python3 SecretFinder/SecretFinder.py -p ./js_files -o notion_secrets_raw.json
